@@ -46,24 +46,37 @@ const showStatusMessage = (type) => {
   document.body.appendChild(message);
 
   const button = message.querySelector(`.${type}__button`);
-  const removeMessage = () => {
-    message.remove();
-  };
+  const innerSelector = `.${type}__inner`;
 
-  button.addEventListener('click', removeMessage);
-
-  document.addEventListener('keydown', (evt) => {
+  const onEsc = (evt) => {
     if (isEscapeKey(evt)) {
+      evt.preventDefault();
       evt.stopPropagation();
       removeMessage();
     }
-  }, { once: true });
-
-  document.addEventListener('click', (evt) => {
-    if (!evt.target.closest(`.${type}__inner`)) {
+  };
+  const onClickOutside = (evt) => {
+    if (!evt.target.closest(innerSelector)) {
+      evt.preventDefault();
+      evt.stopPropagation();
       removeMessage();
     }
-  }, { once: true });
+  };
+  const onButtonClick = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    removeMessage();
+  };
+  function removeMessage () {
+    button.removeEventListener('click', onButtonClick);
+    document.removeEventListener('keydown', onEsc, true);
+    document.removeEventListener('click', onClickOutside, true);
+    message.remove();
+  }
+
+  button.addEventListener('click', onButtonClick);
+  document.addEventListener('keydown', onEsc, { once: true, capture: true });
+  document.addEventListener('click', onClickOutside, { once: true, capture: true });
 };
 
 const resetValidation = () => {
