@@ -1,3 +1,5 @@
+import { TIMEOUT_DELAY } from './data.js';
+
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
 const getCommentElement = ({avatar, name, message}) => {
@@ -34,9 +36,19 @@ const showDataErrorMessage = () => {
   }, 5000);
 };
 
+function debounce (callback, timeoutDelay) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
 export {
   isEscapeKey,
   getCommentElement,
   isTextField,
-  showDataErrorMessage
+  showDataErrorMessage,
+  debounce
 };
